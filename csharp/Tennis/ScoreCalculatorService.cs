@@ -16,7 +16,7 @@ namespace Tennis
         {
             if (playerOne.IsTied(playerTwo))
             {
-                return playerOne.GamePoints >= GamePointsThreshold.Deuce ? Score.Deuce : BuildTieText(playerOne);
+                return BuildTieText(playerOne);
             }
 
             if (playerOne.HasAdvantage(playerTwo) || playerTwo.HasAdvantage(playerOne))
@@ -25,13 +25,13 @@ namespace Tennis
                     ? BuildAdvantageText(playerOne)
                     : BuildAdvantageText(playerTwo);
             }
-            
+
             if (playerOne.IsWinner(playerTwo) || playerTwo.IsWinner(playerOne))
             {
                 var winningPlayer = playerOne.IsWinner(playerTwo) ? playerOne : playerTwo;
                 winningPlayer.AwardGameWin();
                 ResetAllPlayersGamePoints(playerOne, playerTwo);
-                
+
                 return BuildTieText(playerOne);
             }
 
@@ -45,7 +45,9 @@ namespace Tennis
 
         private string BuildTieText(Player player)
         {
-            return $"{_scoreTexts[player.GamePoints]}-{Score.TieSuffix}";
+            return player.GamePoints >= GamePointsThreshold.Deuce
+                ? Score.Deuce
+                : $"{_scoreTexts[player.GamePoints]}-{Score.TieSuffix}";
         }
 
         private string BuildAdvantageText(Player player)
