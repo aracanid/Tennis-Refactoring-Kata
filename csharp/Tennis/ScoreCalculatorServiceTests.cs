@@ -2,9 +2,9 @@ using NUnit.Framework;
 
 namespace Tennis
 {
-    public class ScoreDisplayServiceTests
+    public class ScoreCalculatorServiceTests
     {
-        private ScoreDisplayService _scoreDisplayService = new ScoreDisplayService();
+        private readonly ScoreCalculatorService _scoreCalculatorService = new ScoreCalculatorService();
         private Player _playerOne;
         private Player _playerTwo;
 
@@ -16,56 +16,99 @@ namespace Tennis
         }
 
         [Test]
-        public void ConvertGamePointsToTextShouldReturnLoveAllForANewGameWithNoGamePoints()
+        public void GetScoreShouldReturnLoveAllForANewGameWithNoGamePoints()
         {
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            var result = _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
             Assert.AreEqual($"{Score.Love}-{Score.TieSuffix}", result);
         }
 
         [Test]
-        public void ConvertGamePointsToTextShouldReturnDeuceGivenAtLeastThreePointsPerPlayerAndATie()
+        public void GetScoreShouldReturnDeuceGivenAtLeastThreePointsPerPlayerAndATie()
         {
             _playerOne.GamePoints = 5;
             _playerTwo.GamePoints = 5;
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            var result = _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
             Assert.AreEqual($"{Score.Deuce}", result);
         }
 
         [Test]
         public void
-            ConvertGamePointsToTextShouldReturnScoreTextSuffixedWithAllGivenAtLessThanThreePointsPerPlayerAndATie()
+            GetScoreShouldReturnScoreTextSuffixedWithAllGivenAtLessThanThreePointsPerPlayerAndATie()
         {
             _playerOne.GamePoints = 2;
             _playerTwo.GamePoints = 2;
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            var result = _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
             Assert.AreEqual($"{Score.Thirty}-{Score.TieSuffix}", result);
         }
 
         [Test]
-        public void ConvertGamePointsToTextShouldReturnAdvantageSuffixedWithPlayerNameGivenAdvantageToAPlayer()
+        public void GetScoreShouldReturnAdvantageSuffixedWithPlayerNameGivenAdvantageToAPlayer()
         {
             _playerOne.GamePoints = 4;
             _playerTwo.GamePoints = 3;
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            var result = _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
             Assert.AreEqual($"{Score.Advantage} {_playerOne.Name}", result);
         }
 
         [Test]
-        public void ConvertGamePointsToTextShouldReturnWinForSuffixedWithPlayerNameGivenPlayerIsWinner()
-        {
-            _playerOne.GamePoints = 6;
-            _playerTwo.GamePoints = 4;
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
-            Assert.AreEqual($"{Score.Win} {_playerOne.Name}", result);
-        }
-
-        [Test]
-        public void ConvertGamePointsToTextShouldReturnNormalScoreGivenPlayersHaveNoAdvantageTieOrWin()
+        public void GetScoreShouldReturnNormalScoreGivenPlayersHaveNoAdvantageTieOrWin()
         {
             _playerOne.GamePoints = 1;
             _playerTwo.GamePoints = 3;
-            var result = _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            var result = _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
             Assert.AreEqual($"{Score.Fifteen}-{Score.Forty}", result);
+        }
+        
+        [Test]
+        public void GetScoreShouldIncrementPlayersGameWinsByOneGivenAPlayerHasWonAGame()
+        {
+            _playerOne.GamePoints = 6;
+            _playerTwo.GamePoints = 4;
+            _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
+            Assert.AreEqual(1,  _playerOne.GameWins);
+        }
+        
+        [Test]
+        public void GetScoreShouldIncrementPlayersGameWinsByThreeGivenAPlayerHasWonThreeGames()
+        {
+            _playerOne.GamePoints = 6;
+            _playerTwo.GamePoints = 4;
+            _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
+            _playerOne.GamePoints = 6;
+            _playerTwo.GamePoints = 4;
+            _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
+            _playerOne.GamePoints = 6;
+            _playerTwo.GamePoints = 4;
+            _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
+            Assert.AreEqual(3,  _playerOne.GameWins);
+        }
+        
+        [Test]
+        public void GetScoreShouldResetAllPlayersGamePointsToZeroGivenAPlayerHasWonAGame()
+        {
+            _playerOne.GamePoints = 6;
+            _playerTwo.GamePoints = 4;
+            _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
+            Assert.AreEqual(0,  _playerOne.GamePoints);
+            Assert.AreEqual(0,  _playerTwo.GamePoints);
+        }
+
+        [Test]
+        public void GetGameWinsShouldReturnFormattedGameWinsGivenAPlayerHasWonAGame()
+        {
+            _playerOne.GameWins = 1;
+            _playerTwo.GameWins = 3;
+            var result = _scoreCalculatorService.GetGameWins(_playerOne, _playerTwo);
+            Assert.AreEqual("1-3", result);
+        }
+        
+        [Test]
+        public void GetGameWinsShouldReturnNoGameWinsGivenNoPlayerHasWonAGame()
+        {
+            _playerOne.GameWins = 0;
+            _playerTwo.GameWins = 0;
+            var result = _scoreCalculatorService.GetGameWins(_playerOne, _playerTwo);
+            Assert.AreEqual("0-0", result);
         }
     }
 }
