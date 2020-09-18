@@ -28,21 +28,19 @@ namespace Tennis
             
             if (playerOne.IsWinner(playerTwo) || playerTwo.IsWinner(playerOne))
             {
-                if (playerOne.IsWinner(playerTwo))
-                {
-                    playerOne.AwardGameWin();
-                }
-                
-                if (playerTwo.IsWinner(playerOne))
-                {
-                    playerTwo.AwardGameWin();
-                }
-                
+                var winningPlayer = playerOne.IsWinner(playerTwo) ? playerOne : playerTwo;
+                winningPlayer.AwardGameWin();
                 ResetAllPlayersGamePoints(playerOne, playerTwo);
+                
                 return BuildTieText(playerOne);
             }
 
             return BuildNormalScoreText(playerOne, playerTwo);
+        }
+
+        public string GetGameWins(Player playerOne, Player playerTwo)
+        {
+            return $"{playerOne.GameWins}-{playerTwo.GameWins}";
         }
 
         private string BuildTieText(Player player)

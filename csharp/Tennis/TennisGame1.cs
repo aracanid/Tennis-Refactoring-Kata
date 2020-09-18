@@ -25,7 +25,7 @@ namespace Tennis
 
             if (playerName == _playerTwo.Name)
             {
-                _playerTwo.AwardPoint(); 
+                _playerTwo.AwardPoint();
             }
 
             Console.WriteLine("Invalid Player Name Provided");
@@ -35,8 +35,10 @@ namespace Tennis
         {
             return _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
         }
-        
-        
+
+        public string GetGameWins()
+        {
+            return _scoreCalculatorService.GetGameWins(_playerOne, _playerTwo);
+        }
     }
 }
-

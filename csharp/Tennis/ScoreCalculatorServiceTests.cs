@@ -92,5 +92,23 @@ namespace Tennis
             Assert.AreEqual(0,  _playerOne.GamePoints);
             Assert.AreEqual(0,  _playerTwo.GamePoints);
         }
+
+        [Test]
+        public void GetGameWinsShouldReturnFormattedGameWinsGivenAPlayerHasWonAGame()
+        {
+            _playerOne.GameWins = 1;
+            _playerTwo.GameWins = 3;
+            var result = _scoreCalculatorService.GetGameWins(_playerOne, _playerTwo);
+            Assert.AreEqual("1-3", result);
+        }
+        
+        [Test]
+        public void GetGameWinsShouldReturnNoGameWinsGivenNoPlayerHasWonAGame()
+        {
+            _playerOne.GameWins = 0;
+            _playerTwo.GameWins = 0;
+            var result = _scoreCalculatorService.GetGameWins(_playerOne, _playerTwo);
+            Assert.AreEqual("0-0", result);
+        }
     }
 }

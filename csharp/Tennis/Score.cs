@@ -12,6 +12,5 @@ namespace Tennis
         public const string Deuce = "Deuce";
         public const string TieSuffix = "All";
         public const string Advantage = "Advantage";
-        public const string Win = "Win for";
     }
 }
