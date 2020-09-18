@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Tennis
 {
-    public class ScoreDisplayService
+    public class ScoreCalculatorService
     {
         private readonly Dictionary<int, string> _scoreTexts = new Dictionary<int, string>()
         {
@@ -12,7 +12,7 @@ namespace Tennis
             {3, Score.Forty}
         };
 
-        public string ConvertGamePointsToText(Player playerOne, Player playerTwo)
+        public string GetScore(Player playerOne, Player playerTwo)
         {
             if (playerOne.IsTied(playerTwo))
             {
@@ -25,10 +25,21 @@ namespace Tennis
                     ? BuildAdvantageText(playerOne)
                     : BuildAdvantageText(playerTwo);
             }
-
+            
             if (playerOne.IsWinner(playerTwo) || playerTwo.IsWinner(playerOne))
             {
-                return playerOne.IsWinner(playerTwo) ? BuildWinnerText(playerOne) : BuildWinnerText(playerTwo);
+                if (playerOne.IsWinner(playerTwo))
+                {
+                    playerOne.AwardGameWin();
+                }
+                
+                if (playerTwo.IsWinner(playerOne))
+                {
+                    playerTwo.AwardGameWin();
+                }
+                
+                ResetAllPlayersGamePoints(playerOne, playerTwo);
+                return BuildTieText(playerOne);
             }
 
             return BuildNormalScoreText(playerOne, playerTwo);
@@ -44,16 +55,17 @@ namespace Tennis
             return $"{Score.Advantage} {player.Name}";
         }
 
-        private string BuildWinnerText(Player player)
-        {
-            return $"{Score.Win} {player.Name}";
-        }
-
         private string BuildNormalScoreText(Player playerOne, Player playerTwo)
         {
             var playerOneScoreText = _scoreTexts[playerOne.GamePoints];
             var playerTwoScoreText = _scoreTexts[playerTwo.GamePoints];
             return $"{playerOneScoreText}-{playerTwoScoreText}";
+        }
+
+        private void ResetAllPlayersGamePoints(Player playerOne, Player playerTwo)
+        {
+            playerOne.ResetGamePoints();
+            playerTwo.ResetGamePoints();
         }
     }
 }

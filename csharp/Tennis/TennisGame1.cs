@@ -7,13 +7,13 @@ namespace Tennis
     {
         private Player _playerOne;
         private Player _playerTwo;
-        private ScoreDisplayService _scoreDisplayService;
+        private readonly ScoreCalculatorService _scoreCalculatorService;
 
         public TennisGame1(string player1Name, string player2Name)
         {
             _playerOne = new Player(player1Name);
             _playerTwo = new Player(player2Name);
-            _scoreDisplayService = new ScoreDisplayService();
+            _scoreCalculatorService = new ScoreCalculatorService();
         }
 
         public void WonPoint(string playerName)
@@ -33,7 +33,7 @@ namespace Tennis
 
         public string GetScore()
         {
-            return _scoreDisplayService.ConvertGamePointsToText(_playerOne, _playerTwo);
+            return _scoreCalculatorService.GetScore(_playerOne, _playerTwo);
         }
         
         
